@@ -30,7 +30,7 @@ jobs:
           cd vite-project
           npm ci
 
-      - name: Build React App
+      - name: Build Vite App
         run: |
           cd vite-project
           npm run build
@@ -38,9 +38,9 @@ jobs:
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: vite-project/build
+          publish-dir: vite-project/dist
           production-branch: main
-          deploy-message: "Frontend Deployed via GitHub Actions "
+          deploy-message: "Frontend Deployed via GitHub Actions"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           netlify-auth-token: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           site-id: ${{ secrets.NETLIFY_SITE_ID }}
