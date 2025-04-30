@@ -38,19 +38,47 @@ import { faCartPlus, faShoppingBag } from "@fortawesome/free-solid-svg-icons";
 
 const Home = () => {
   const { addToCart } = useCart();
-  const [showForm, setShowForm] = useState(false);
   const [users, setUsers] = useState([
     { name: "", email: "", phone: "", address: "" },
   ]);
 
-  const handleAddUser = () => {
-    setUsers([...users, { name: "", email: "", phone: "", address: "" }]);
+  const [showForm, setShowForm] = useState(false);
+  const [names, setNames] = useState([""]);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+
+  const handleNameChange = (index, value) => {
+    const updatedNames = [...names];
+    updatedNames[index] = value;
+    setNames(updatedNames);
   };
 
-  const handleInputChange = (index, field, value) => {
-    const updatedUsers = [...users];
-    updatedUsers[index][field] = value;
-    setUsers(updatedUsers);
+  const handleAddName = () => {
+    setNames([...names, ""]);
+  };
+
+  const handleRemoveName = (index) => {
+    const updatedNames = names.filter((_, i) => i !== index);
+    setNames(updatedNames);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const userData = names.map((name) => ({
+      name,
+      email,
+      phone,
+      address,
+    }));
+
+    console.log("User Data Submitted:", userData);
+
+    setNames([""]);
+    setEmail("");
+    setPhone("");
+    setAddress("");
+    setShowForm(false);
   };
 
   const gyms = [
@@ -136,9 +164,22 @@ const Home = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleFeedbackSubmit = (e) => {
     e.preventDefault();
-    console.log("Submitted Feedback:", formData);
+    alert("Submitted!");
+  };
+
+  const handleUserInfoSubmit = (e) => {
+    e.preventDefault();
+    console.log("Submitting user data:", users);
+
+    addToCart({
+      users: users,
+      plan: "Premium Plan",
+    });
+
+    alert("User info submitted successfully!");
+    setShowForm(false);
   };
 
   return (
@@ -316,51 +357,60 @@ const Home = () => {
               <div className="form-popup">
                 <h2>Buy Plan - User Information</h2>
                 <form onSubmit={handleSubmit}>
-                  {users.map((user, index) => (
-                    <div key={index} className="user-input-group">
-                      <h4>User {index + 1}</h4>
+                  {names.map((name, index) => (
+                    <div key={index} className="name-group">
+                      <label>Name {index + 1}</label>
                       <input
                         type="text"
-                        placeholder="Name"
-                        value={user.name}
+                        value={name}
+                        placeholder="Enter Name"
                         onChange={(e) =>
-                          handleInputChange(index, "name", e.target.value)
+                          handleNameChange(index, e.target.value)
                         }
                         required
                       />
-                      <input
-                        type="email"
-                        placeholder="Email"
-                        value={user.email}
-                        onChange={(e) =>
-                          handleInputChange(index, "email", e.target.value)
-                        }
-                        required
-                      />
-                      <input
-                        type="tel"
-                        placeholder="Phone Number"
-                        value={user.phone}
-                        onChange={(e) =>
-                          handleInputChange(index, "phone", e.target.value)
-                        }
-                        required
-                      />
-                      <input
-                        type="text"
-                        placeholder="Address"
-                        value={user.address}
-                        onChange={(e) =>
-                          handleInputChange(index, "address", e.target.value)
-                        }
-                        required
-                      />
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          className="remove-btn"
+                          onClick={() => handleRemoveName(index)}
+                        >
+                          Remove
+                        </button>
+                      )}
+                      {index === names.length - 1 && (
+                        <button
+                          type="button"
+                          className="add-btn"
+                          onClick={handleAddName}
+                        >
+                          + Add More Name
+                        </button>
+                      )}
                     </div>
                   ))}
-                  <button type="button" onClick={handleAddUser}>
-                    + Add More Users
-                  </button>
-                  <br />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="tel"
+                    placeholder="Phone Number"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    required
+                  />
+
                   <button type="submit">Submit</button>
                 </form>
               </div>
@@ -717,7 +767,7 @@ const Home = () => {
 
       <div className="feedback-form-container">
         <h2>We value your feedback</h2>
-        <form onSubmit={handleSubmit} className="feedback-form">
+        <form onSubmit={handleFeedbackSubmit} className="feedback-form">
           <input
             type="text"
             name="name"
